@@ -1,7 +1,5 @@
 package com.example.mealtracker.ui.theme.MainScreens
 
-package com.example.killmealready
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
