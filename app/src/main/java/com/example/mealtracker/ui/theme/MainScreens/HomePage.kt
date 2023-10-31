@@ -33,187 +33,125 @@ import com.example.mealtracker.ui.theme.functions.Screen
 
 
 
-class SainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MealTrackerTheme {
-                val navController = rememberNavController()
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                }
-            }
-        }
-    }
 
 
-    data class Meal(val id: Int, val name: String, val calories: Int)
-
-    sealed class MealResult<out T> {
-        class MealAdded(newMeal: Meal) : MealResult<Meal>() {
-
-        }
-    }
-
-    data class MealAdded(val meal: Meal) : MealResult<Meal>()
-    data class MealUpdated(val meal: Meal) : MealResult<Meal>()
-    data class MealError(val message: String) : MealResult<Nothing>()
-
-    fun addMeal(name : String, calories: Int, ingredients: List<String>): MealResult<Meal> {
-        return try {
-            val newMeal = Meal(1, name, calories)
-            MealResult.MealAdded(newMeal)
-        } catch (e: Exception) {
-            MealError("Error adding meal: ${e.message}")
-        }
-    }
-
-    private fun Nothing?.isEmpty(): Boolean {
-        return null == true
-    }
-
-    fun updateMeal(meal: Meal, newName: String, newCalories: Int): MealResult<Meal> {
-        return try {
-            val updatedMeal = meal.copy(name = newName, calories = newCalories)
-            MealUpdated(updatedMeal)
-        } catch (exception: Exception) {
-            MealError("Error updating meal: ${exception.message}")
-        }
-    }
-
-    fun searchMeals(query: String, meals: List<Meal>): List<Meal> { //search fucntion-implement into other pages if neccssary
-        val lowercaseQuery = query.toLowerCase()
-        return meals.filter { it.name.toLowerCase().contains(lowercaseQuery) }
-    }
-
-    @Composable
-    fun mainPage(navController: NavController) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color.Gray
-        )  {}
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
+@Composable
+fun mainPage(navController: NavController) {
+Surface(
+    modifier = Modifier.fillMaxSize(),
+    color = Color.Gray
+)  {}
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ){
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                //make each text a button to move pages
+                Button(
+                    onClick = {/*go to progress page*/
+                        navController.navigate(route = Screen.ProgressPage.route)
+                              },
+                    modifier = Modifier.padding(1.dp)
                 ) {
-                    //make each text a button to move pages
-                    Button(
-                        onClick = {/*go to progress page*/
-                                  navController.navigate(route = Screen.ProgressPage.route)
-                                  },
-                        modifier = Modifier.padding(1.dp)
-                    ) {
-                        Text(
-                            text = "Progress",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(1.dp),
-                            color = Color.White
-                        )
-                    }
-                    Button(
-                        onClick = {/*Already at home page do not do anything*/  },
-                        modifier = Modifier.padding(1.dp)
-                    ) {
-                        Text(
-                            text = "Home",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(1.dp),
-                            color = Color.Red
-                        )
-                    }
-                    Button(
-                        onClick = {/*Navigate to ArchivePage*/  },
-                        modifier = Modifier.padding(1.dp)
-                    ) {
-                        Text(
-                            text = "Archive",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(1.dp),
-                            color = Color.White
-                        )
-                    }
+                    Text(
+                        text = "Progress",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(1.dp),
+                        color = Color.White
+                    )
                 }
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    color = Color.White
-                )
-                Box(
-                    modifier = Modifier
-                        .border(
-                            1.dp,
-                            Color.Black,
-                            shape = MaterialTheme.shapes.extraLarge
-                        )
-                        .padding(5.dp)
+                Button(
+                    onClick = {/*Already at home page do not do anything*/  },
+                    modifier = Modifier.padding(1.dp)
                 ) {
-                    Box(
-                        modifier = Modifier.width(80.dp),
-                        contentAlignment = Alignment.Center
-                    ) {Button(onClick = { openAddMeal() },
-                        modifier = Modifier.width(80.dp)
-                    ) {}
-                        Text(
-                            text = "Add Meal",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(bottom = 5.dp),
-                            color = Color.White
-                        )
-                    }
-
-
-
+                    Text(
+                        text = "Home",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(1.dp),
+                        color = Color.Red
+                    )
+                }
+                Button(
+                    onClick = {/*Navigate to ArchivePage*/  },
+                    modifier = Modifier.padding(1.dp)
+                ) {
+                    Text(
+                        text = "Archive",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(1.dp),
+                        color = Color.White
+                    )
                 }
             }
-
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color = Color.White
+            )
             Box(
                 modifier = Modifier
                     .border(
                         1.dp,
                         Color.Black,
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.extraLarge
                     )
-                    .padding(8.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(640.dp)
-                    .background(Color.DarkGray, shape = RoundedCornerShape(9.dp))
-            ){
-                Text(
-                    text = "Meals eaten today",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 26.sp,
-                    color = Color.White
-                )
-
+                    .padding(5.dp)
+            ) {
+                Box(
+                    modifier = Modifier.width(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {Button(onClick = { /*addmeal function here*/ },
+                    modifier = Modifier.width(80.dp)
+                ) {}
+                    Text(
+                        text = "Add Meal",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(bottom = 5.dp),
+                        color = Color.White
+                    )
+                }
             }
-            openAddMeal()
-
         }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .border(
+                    1.dp,
+                    Color.Black,
+                    shape = MaterialTheme.shapes.medium
+                )
+                .padding(8.dp)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(640.dp)
+                .background(Color.DarkGray, shape = RoundedCornerShape(9.dp))
+        ){
+            Text(
+                text = "Meals eaten today",
+                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                color = Color.White
+            )
+        }
+        openAddMeal()
     }
 }
+
 @Composable
 fun openAddMeal() {//pop up box to let user add meal
     val context = LocalContext.current
@@ -229,8 +167,8 @@ fun navigate(navController: String) {
 }
 
 
-fun navigate(navController: NavController, route: String) {
-    navController.navigate(route)
+fun navigation(navController: NavController, route: String) {
+    navigate(navController = rememberNavContrller())
 }
 
 
