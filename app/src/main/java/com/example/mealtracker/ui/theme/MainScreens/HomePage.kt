@@ -27,25 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import android.app.AlertDialog
 import androidx.compose.ui.platform.LocalContext
+import com.example.mealtracker.ui.theme.functions.Screen
 
 
-abstract class MealDatabase(context: Context) : SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
-    companion object {
-        private const val databaseName = "MealTracker.db"
-        private const val databaseVersion = 1
-    }
-
-    override fun onCreate(db: SQLiteDatabase) {
-        //Creating database table
-        val createTableSQL = "create table meals (foodID INTEGER PRIMARY KEY AUTOINCREMENT, foodName TEXT, calories INTEGER)"
-        db.execSQL(createTableSQL)
-    }
-}
 
 class SainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,8 +89,6 @@ class SainActivity : ComponentActivity() {
         return meals.filter { it.name.toLowerCase().contains(lowercaseQuery) }
     }
 
-
-
     @Composable
     fun mainPage(navController: NavController) {
         Surface(
@@ -125,13 +109,10 @@ class SainActivity : ComponentActivity() {
                 ) {
                     //make each text a button to move pages
                     Button(
-                        onClick = { //Navigate to ProgressPage
-                            val navController = null.apply {
-                                navigate(Screen.ProgressPage.route)
-                            }
-                        },
+                        onClick = {/*go to progress page*/
+                                  navController.navigate(route = Screen.ProgressPage.route)
+                                  },
                         modifier = Modifier.padding(1.dp)
-
                     ) {
                         Text(
                             text = "Progress",
@@ -258,17 +239,10 @@ fun navigate(navController: NavController, route: String) {
 fun mainPrev(){
     MealTrackerTheme {
         val navController = rememberNavController()
-        mainPage(navController = navController)
+        HomePage(navController = navController)
     }
 }
 
-private fun rememberNavController(): NavController {
-    return NavController(this)
-}
-
-private fun mainPage(navController: NavController) {
-
-}
 
 
 
