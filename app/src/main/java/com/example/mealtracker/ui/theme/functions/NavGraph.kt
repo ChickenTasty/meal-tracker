@@ -1,35 +1,23 @@
 package com.example.mealtracker.ui.theme.functions
 
-import androidx.navigation.NavHost
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavHost
 
 
-annotation class composable
 
-sealed class Screen(val route: String){
-    object HomePage : Screen(route = "Home_Page")
-    object HomePage2 : Screen(route = "Home_Page#2")
-    object ProgressPage : Screen(route = "Progress_Page")
-    object ProgressPage2 : Screen(route = "Progress_Page#2")
-    object ArchivePage : Screen(route = "Archive_Page")
 
-}
-
-@composable
+@Composable
 fun NavGraph(navController: NavHostController){
     NavHost(
         navController = navController,
-        startDestination = Screen.HomePage.route
+        startDestination = screen.HomePage.route
     ){
-        composable(route  = Screen.HomePage.route)
+        composable( route = screen.HomePage.route){
+
+        }
     }
+
 }
 
-object destinations {
-    const val HomePage = "Home_Page"
-    const val HomePage2 = "Home_Page#2"
-    const val ProgressPage = "Progress_Page"
-    const val ProgressPage2 = "Progress_Page#2"
-    const val ArchivePage = "Archive_Page"
-}
 

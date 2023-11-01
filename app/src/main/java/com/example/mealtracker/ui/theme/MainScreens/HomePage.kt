@@ -167,9 +167,11 @@ fun navigate(navController: String) {
 }
 
 
-fun navigation(navController: NavController, route: String) {
+fun navigation(navController: NavController) {
     navigate(navController = rememberNavContrller())
 }
+
+
 
 
 @Preview(showBackground = true)
