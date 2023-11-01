@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun progressPage(navController: NavController) {
@@ -104,5 +105,5 @@ fun progressPage(navController: NavController) {
 @Preview(showSystemUi = true)
 @Composable
 fun progressPagePrev() {
-    progressPage()
+    progressPage(navController = rememberNavController())
 }

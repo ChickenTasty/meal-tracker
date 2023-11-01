@@ -11,24 +11,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.mealtracker.ui.theme.MainScreens.mainPage2
 import com.example.mealtracker.ui.theme.MealTrackerTheme
-import com.example.mealtracker.ui.theme.functions.Screen
+import com.example.mealtracker.ui.theme.functions.NavGraph
+import com.example.mealtracker.ui.theme.functions.screen
 
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+    lateinit var navController: NavHostController
+    override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContent {
             MealTrackerTheme {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = Screen.HomePage.route){
-                    composable(Screen.HomePage.route){
-                        mainPage(navController)
-                    }
-                }
-            }
-        }
-    }
-}
+                navController = rememberNavController()
+                NavGraph(navController = navController)
 
+    }  }}  }

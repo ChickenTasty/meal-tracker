@@ -25,9 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 
-@Preview
+
 @Composable
 fun mainPage2(navController: NavController){
     Surface(
@@ -167,5 +168,5 @@ fun mainPage2(navController: NavController){
 @Preview(showSystemUi = true)
 @Composable
 fun mainprev2(){
-    mainPage2()
+    mainPage2(navController = rememberNavController())
 }

@@ -31,9 +31,7 @@ import android.app.AlertDialog
 import androidx.compose.ui.platform.LocalContext
 import com.example.mealtracker.ui.theme.functions.screen
 import androidx.navigation.compose.composable
-
-
-
+import androidx.navigation.compose.rememberNavController
 
 
 @Composable
@@ -127,7 +125,7 @@ Surface(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+            Box(
             modifier = Modifier
                 .border(
                     1.dp,
@@ -136,11 +134,14 @@ Surface(
                 )
                 .padding(8.dp)
         )
+
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(640.dp)
                 .background(Color.DarkGray, shape = RoundedCornerShape(9.dp))
+                .align(Alignment.BottomCenter)
         ){
             Text(
                 text = "Meals eaten today",
@@ -163,15 +164,6 @@ fun openAddMeal() {//pop up box to let user add meal
 
         .setNegativeButton("cancel") { dialog, which -> /* add closing the tab here*/ }
 }
-fun navigate(navController: String) {
-    TODO("Not yet implemented")
-}
-
-
-fun navigation(navController: NavController) {
-    navigate(navController = rememberNavContrller())
-}
-
 
 
 
@@ -180,7 +172,7 @@ fun navigation(navController: NavController) {
 fun mainPrev(){
     MealTrackerTheme {
         val navController = rememberNavController()
-        HomePage(navController = navController)
+        mainPage(navController = navController)
     }
 }
 
