@@ -24,11 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 
 
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 
 
 @Preview
 @Composable
-fun mainPage2(){
+fun mainPage2(navController: NavController){
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Gray

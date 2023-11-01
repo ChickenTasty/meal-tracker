@@ -29,7 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import android.app.AlertDialog
 import androidx.compose.ui.platform.LocalContext
-import com.example.mealtracker.ui.theme.functions.Screen
+import com.example.mealtracker.ui.theme.functions.screen
+import androidx.navigation.compose.composable
 
 
 
@@ -56,7 +57,7 @@ Surface(
                 //make each text a button to move pages
                 Button(
                     onClick = {/*go to progress page*/
-                        navController.navigate(route = Screen.ProgressPage.route)
+                        navController.navigate(route = screen.ProgressPage.route)
                               },
                     modifier = Modifier.padding(1.dp)
                 ) {
