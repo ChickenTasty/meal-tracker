@@ -46,15 +46,6 @@ fun openAddMeal(navController: NavController) {//pop up box to let user add meal
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
         TextField(
-            value = ingredients,
-            onValueChange = { ingredients = it },
-            label = { Text("Ingredients") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-        )
-        TextField(
             value = calories,
             onValueChange = { calories = it },
             label = { Text("Calories") },
@@ -66,6 +57,15 @@ fun openAddMeal(navController: NavController) {//pop up box to let user add meal
             onValueChange = { carbonfootprint = it },
             label = { Text("Carbon Foot Print") },
             modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+        )
+        TextField(
+            value = ingredients,
+            onValueChange = { ingredients = it },
+            label = { Text("Ingredients") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
         )
         Box(
@@ -85,7 +85,7 @@ fun openAddMeal(navController: NavController) {//pop up box to let user add meal
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Add Meal",
+                        "",
                         fontSize = 18.sp
                     )
                 }
@@ -105,7 +105,26 @@ fun openAddMeal(navController: NavController) {//pop up box to let user add meal
                 }
 
                 Button(
-                    onClick = { /* Handle add meal button click here */ },
+                    onClick = { /* Handle add meal button click here */
+                        val ingredientsList = ingredients.split(",").map { it.trim() } //converts string into a list of strings
+                        val caloriesInt = calories.toIntOrNull() ?: 0 //converts string of numbers to int
+                        val result = addMeal(mealName, caloriesInt, ingredientsList)
+
+                        when (result) {
+                            is MealResult.MealAdded -> {
+                                println("Meal added successfully: ${result.meal}")
+                                mealName = ""
+                                ingredients = ""
+                                calories = ""
+                                carbonfootprint = ""
+                            }
+                            is MealResult.MealError -> {
+                                println("Failed to add meal: ${result.message}")
+
+                            }
+
+                            else -> {}
+                        }},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)

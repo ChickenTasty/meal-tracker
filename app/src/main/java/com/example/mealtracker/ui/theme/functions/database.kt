@@ -18,24 +18,26 @@ abstract class MealDatabase(context: Context) : SQLiteOpenHelper(context, databa
     }
 }
 
-data class Meal(val id: Int, val name: String, val calories: Int)
+data class Meal(val id: Int, val name: String, val calories: Int, val ingredients: List<String>)
 
 sealed class MealResult<out T> {
-    class MealAdded(newMeal: Meal) : MealResult<Meal>() {
-
-    }
+    data class MealAdded(val meal: Meal) : MealResult<Meal>()
+    data class MealError(val message: String) : MealResult<Nothing>()
 }
 
 data class MealAdded(val meal: Meal) : MealResult<Meal>()
 data class MealUpdated(val meal: Meal) : MealResult<Meal>()
 data class MealError(val message: String) : MealResult<Nothing>()
 
-fun addMeal(name : String, calories: Int, ingredients: List<String>): MealResult<Meal> {
+fun addMeal(name: String, calories: Int, ingredients: List<String>): MealResult<Meal> {
     return try {
-        val newMeal = Meal(1, name, calories)
+        if (name.isBlank() || ingredients.isEmpty()) {
+            return MealResult.MealError("Meal name or ingredients cannot be blank") // error message if function does not work
+        }
+        val newMeal = Meal(1, name, calories, ingredients) // meal with data of calories and ingredients
         MealResult.MealAdded(newMeal)
-    } catch (e: Exception) {
-        MealError("Error adding meal: ${e.message}")
+    } catch (e: Exception) { //exception that gets rejected
+        MealResult.MealError("Error adding meal: ${e.message}")
     }
 }
 

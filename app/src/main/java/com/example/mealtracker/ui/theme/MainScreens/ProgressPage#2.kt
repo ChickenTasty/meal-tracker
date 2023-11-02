@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mealtracker.ui.theme.functions.screen
 
 @Composable
 fun progressPage2(navController: NavController) {
@@ -43,7 +44,9 @@ fun progressPage2(navController: NavController) {
                     )
                 }
                 Button(
-                    onClick = { /* Handle Progress button click here */ },
+                    onClick = { /* Handle Progress button click here */
+                        navController.navigate(route = screen.HomePage.route)
+                              },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
@@ -55,7 +58,9 @@ fun progressPage2(navController: NavController) {
                     )
                 }
                 Button(
-                    onClick = { /* Handle Progress button click here */ },
+                    onClick = { /* Handle Progress button click here */
+                        navController.navigate(route = screen.ArchivePage.route)
+                              },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
