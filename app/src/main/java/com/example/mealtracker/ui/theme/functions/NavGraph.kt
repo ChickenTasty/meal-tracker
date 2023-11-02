@@ -32,9 +32,10 @@ fun NavGraph(navController: NavHostController){
         composable( route = screen.ArchivePage.route){
             archivePage(navController = navController)
         }
-        
+        composable ( route = screen.addMealPage.route){
+            openAddMeal(navController = navController)
+        }
     }
-
 }
 
 

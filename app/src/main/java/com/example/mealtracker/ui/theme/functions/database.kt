@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+
 abstract class MealDatabase(context: Context) : SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
     companion object {
         private const val databaseName = "MealTracker.db"

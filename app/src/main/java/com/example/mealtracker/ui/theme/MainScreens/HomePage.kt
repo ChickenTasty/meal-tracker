@@ -29,8 +29,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.mealtracker.ui.theme.functions.screen
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.foundation.layout.weight
+
 
 
 
@@ -113,7 +114,9 @@ Surface(
                 Box(
                     modifier = Modifier.width(80.dp),
                     contentAlignment = Alignment.Center
-                ) {Button(onClick = { /*addmeal function here*/ },
+                ) {Button(onClick = { /*addmeal function here*/
+                    navController.navigate(route = screen.addMealPage.route)
+                                    },
                     modifier = Modifier.width(80.dp)
                 ) {}
                     Text(
@@ -128,43 +131,23 @@ Surface(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-            Box(
+        Box(
             modifier = Modifier
-                .border(
-                    1.dp,
-                    Color.Black,
-                    shape = MaterialTheme.shapes.medium
-                )
-                .padding(8.dp)
-        )
-
-        LazyColumn(modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxWidth()
+                .height(500.dp)
+                .background(Color.DarkGray, shape = RoundedCornerShape(9.dp))
+                .align(Alignment.BottomCenter)
         ){
-            items(3){index ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                )
-            }
+            Text(
+                text = "Meals eaten today",
+                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                color = Color.White
+            )
         }
-        openAddMeal()
     }
 }
 
-@Composable
-fun openAddMeal() {//pop up box to let user add meal
-    val context = LocalContext.current
-
-    AlertDialog.Builder(context)
-        .setTitle("Add Meal")
-        .setPositiveButton("Add") { dialog, which -> /*add add meal stuff here */}
-
-        .setNegativeButton("cancel") { dialog, which -> /* add closing the tab here*/ }
-}
 
 
 

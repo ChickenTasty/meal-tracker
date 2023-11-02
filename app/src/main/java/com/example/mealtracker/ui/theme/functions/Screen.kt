@@ -6,5 +6,6 @@ sealed class screen(val route: String){
     object ProgressPage : screen(route = "Progress_Page")
     object ProgressPage2 : screen(route = "Progress_Page#2")
     object ArchivePage : screen(route = "Archive_Page")
+    object addMealPage : screen(route = "addMeal_Page")
 
 }

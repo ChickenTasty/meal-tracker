@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mealtracker.ui.theme.functions.screen
 
 @Composable
 fun archivePage(navController: NavController) {
@@ -31,7 +32,9 @@ fun archivePage(navController: NavController) {
             ) {
                 //make each text a button to move pages
                 Button(
-                    onClick = { /* Handle Progress button click here */ },
+                    onClick = { /* Handle Progress button click here */
+                        navController.navigate(route = screen.ProgressPage.route)
+                              },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
@@ -43,7 +46,9 @@ fun archivePage(navController: NavController) {
                     )
                 }
                 Button(
-                    onClick = { /* Handle Progress button click here */ },
+                    onClick = { /* Handle Progress button click here */
+                        navController.navigate(route = screen.HomePage.route)
+                              },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
