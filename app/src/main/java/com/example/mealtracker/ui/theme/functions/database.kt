@@ -3,18 +3,52 @@ package com.example.mealtracker.ui.theme.functions
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.Random
 
 
-abstract class MealDatabase(context: Context) : SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
+
+data class trackerModel(
+    var id: Int = getID(),
+    var mealName: String = "",
+    var ingredients: String = "",
+    var calories: Int,
+    var carbonfootprint: Int
+){
+    companion object{
+        fun getID(): Int{
+            val random = Random()
+            return random.nextInt(100)
+        }
+    }
+}
+class MealDatabase(context: Context) :
+    SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
     companion object {
         private const val databaseName = "MealTracker.db"
         private const val databaseVersion = 1
+        private const val mealTable = "Meal Table"
+        private const val ID = "ID"
+        private const val mealName = "Name"
+        private const val ingredients = "Ingredients"
+        private const val calories = "Calories"
+        private const val carbonfootprint = "Carbon foot print"
+
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         //Creating database table
-        val createTableSQL = "create table meals (foodID INTEGER PRIMARY KEY AUTOINCREMENT, foodName TEXT, calories INTEGER)"
-        db.execSQL(createTableSQL)
+        val createTblmeal = ("Create Table" + mealTable
+                + "(" + ID + "Primary Key"
+                + mealName + "Text,"
+                + ingredients + "Text,"
+                + calories + "Text,"
+                + carbonfootprint + "Text," + ")")
+        db?.execSQL(createTblmeal)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int){
+        db!!.execSQL("DROP TABLE ${MealDatabase}")
+        onCreate(db)
     }
 }
 

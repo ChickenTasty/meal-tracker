@@ -129,12 +129,12 @@ Surface(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .height(700.dp)
                 .background(Color.DarkGray, shape = RoundedCornerShape(9.dp))
                 .align(Alignment.BottomCenter)
         ){

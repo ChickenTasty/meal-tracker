@@ -123,7 +123,8 @@ fun openAddMeal(navController: NavController) {//pop up box to let user add meal
 
                             }
 
-                            else -> {}
+                            else -> {
+                            }
                         }},
                     modifier = Modifier
                         .fillMaxWidth()
