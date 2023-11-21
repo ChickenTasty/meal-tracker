@@ -31,25 +31,24 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-
-
+import com.example.mealtracker.ui.theme.functions.Meal
 
 
 
 @Composable
-fun mainPage(navController: NavController) {
-Surface(
-    modifier = Modifier.fillMaxSize(),
-    color = Color.Gray
-)  {}
+fun mainPage(navController: NavController, meals: List<Meal>) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.Gray
+    ) {}
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -58,7 +57,7 @@ Surface(
                 Button(
                     onClick = {/*go to progress page*/
                         navController.navigate(route = screen.ProgressPage.route)
-                              },
+                    },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
@@ -70,7 +69,7 @@ Surface(
                     )
                 }
                 Button(
-                    onClick = {/*Already at home page do not do anything*/  },
+                    onClick = {/*Already at home page do not do anything*/ },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
@@ -84,7 +83,7 @@ Surface(
                 Button(
                     onClick = {/*Navigate to ArchivePage*/
                         navController.navigate(route = screen.ArchivePage.route)
-                              },
+                    },
                     modifier = Modifier.padding(1.dp)
                 ) {
                     Text(
@@ -114,11 +113,13 @@ Surface(
                 Box(
                     modifier = Modifier.width(80.dp),
                     contentAlignment = Alignment.Center
-                ) {Button(onClick = { /*addmeal function here*/
-                    navController.navigate(route = screen.addMealPage.route)
-                                    },
-                    modifier = Modifier.width(80.dp)
-                ) {}
+                ) {
+                    Button(
+                        onClick = { /*addmeal function here*/
+                            navController.navigate(route = screen.addMealPage.route)
+                        },
+                        modifier = Modifier.width(80.dp)
+                    ) {}
                     Text(
                         text = "Add Meal",
                         fontWeight = FontWeight.Bold,
@@ -137,17 +138,17 @@ Surface(
                 .height(700.dp)
                 .background(Color.DarkGray, shape = RoundedCornerShape(9.dp))
                 .align(Alignment.BottomCenter)
-        ){
-            Text(
-                text = "Meals eaten today",
-                fontWeight = FontWeight.Bold,
-                fontSize = 26.sp,
-                color = Color.White
-            )
+        ) {
+            LazyColumn {
+                items(meals) { meal ->
+                    // Customize the appearance of each meal item as needed
+                    // For example, you can create a Composable function to represent a meal item
+                    MealItem(meal = meal)
+                }
+            }
         }
     }
 }
-
 
 
 
@@ -156,9 +157,10 @@ Surface(
 fun mainPrev(){
     MealTrackerTheme {
         val navController = rememberNavController()
-        mainPage(navController = navController)
+        mainPage(navController = navController, meals = meals)
     }
 }
+
 
 
 
