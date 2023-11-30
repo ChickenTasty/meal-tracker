@@ -1,36 +1,31 @@
+@file:OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeUiApi::class)
+
 package com.example.mealtracker.ui.theme.functions
 
-import android.app.AlertDialog
-import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.mealtracker.ui.theme.MealTrackerTheme
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.google.firebase.database.FirebaseDatabase
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun openAddMeal(navController: NavController) {//pop up box to let user add meal
-    var mealName by remember {mutableStateOf("") }
-    var ingredients by remember {mutableStateOf("") }
-    var calories by remember {mutableStateOf("") }
-    var carbonfootprint by remember {mutableStateOf("")}
+fun openAddMeal(navController: NavController) {
+    var mealName by remember { mutableStateOf("") }
+    var calories by remember { mutableStateOf("") }
+    var carbonfootprint by remember { mutableStateOf("") }
+    var ingredients by remember { mutableStateOf("") }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -66,81 +61,77 @@ fun openAddMeal(navController: NavController) {//pop up box to let user add meal
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         )
-        Box(
+
+        Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp),
-            contentAlignment = Alignment.BottomCenter
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Button(
+                onClick = {
+                    navController.navigateUp()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "",
-                        fontSize = 18.sp
-                    )
-                }
+                Text("Cancel", fontSize = 13.sp)
+            }
 
-                Button(
-                    onClick = {
-                        navController.navigate(route = screen.HomePage.route)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                ) {
-                    Text(
-                        "cancel",
-                        fontSize = 13.sp
-                    )
-                }
+            Button(
+                onClick = {
+                    // Close the keyboard
+                    keyboardController?.hide()
 
-                Button(
-                    onClick = { /* Handle add meal button click here */
-                        val ingredientsList = ingredients.split(",").map { it.trim() } //converts string into a list of strings
-                        val caloriesInt = calories.toIntOrNull() ?: 0 //converts string of numbers to int
-                        val result = addMeal(mealName, caloriesInt, ingredientsList)
+                    val ingredientsList = ingredients.split(",").map { it.trim() }
+                    val caloriesInt = calories.toIntOrNull() ?: 0
+                    addMeal(mealName, caloriesInt, ingredientsList)
 
-                        when (result) {
-                            is MealResult.MealAdded -> {
-                                println("Meal added successfully: ${result.meal}")
-                                mealName = ""
-                                ingredients = ""
-                                calories = ""
-                                carbonfootprint = ""
-                            }
-                            is MealResult.MealError -> {
-                                println("Failed to add meal: ${result.message}")
-
-                            }
-
-                            else -> {
-                            }
-                        }},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Text("Add Meal")
-                }
+                    // Assuming mealName, ingredients, calories, and carbonfootprint are mutable variables
+                    mealName = ""
+                    ingredients = ""
+                    calories = ""
+                    carbonfootprint = ""
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                Text("Add Meal")
             }
         }
     }
 }
-@Preview
-@Composable
-fun addMealPrev() {
-    MealTrackerTheme {
-        val navController = rememberNavController()
-        openAddMeal(navController = navController)
+
+fun addMeal(mealName: String, calories: Int, ingredients: List<String>) {
+    try {
+        // Initializing firebase
+        val mealDatabase = FirebaseDatabase.getInstance()
+        val mealsRef = mealDatabase.getReference("meals")
+
+        // Generating unique ID for meals
+        val mealID = UUID.randomUUID().toString()
+
+
+        val mealData = mapOf(
+            "mealName" to mealName,
+            "calories" to calories,
+            "ingredients" to ingredients
+        )
+
+        // Adding meal to the database
+        mealsRef.child(mealID).setValue(mealData)
+    } catch (e: Exception) {
+        Log.e("AddMeal", "Error adding meal to Firebase", e)
     }
 }
+
+data class Meal(
+    val mealName: String,
+    val calories: Int,
+    val carbonfootprint: Int,
+    val ingredients: String
+)

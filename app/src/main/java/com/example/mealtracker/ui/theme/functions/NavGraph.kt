@@ -10,7 +10,6 @@ import com.example.mealtracker.ui.theme.MainScreens.mainPage2
 import com.example.mealtracker.ui.theme.MainScreens.progressPage
 import com.example.mealtracker.ui.theme.MainScreens.progressPage2
 
-
 @Composable
 fun NavGraph(navController: NavHostController){
     NavHost(

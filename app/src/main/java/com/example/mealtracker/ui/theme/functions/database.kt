@@ -5,59 +5,81 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import androidx.compose.material3.contentColorFor
 import java.util.Random
 
+import com.google.firebase.database.FirebaseDatabase
+
+// Initialising the firebase
+val MealDatabase = FirebaseDatabase.getInstance()
+val mealsRef = MealDatabase.getReference("meals")
+
+// Adding meal function
+fun addMeal(mealID: String, mealData: Map<String, Any>) {
+    mealsRef.child(mealID).setValue(mealData)
+}
+
+fun main() {
+    // Example: Add a breakfast burrito meal
+    val breakfastBurrito = mapOf(
+        "mealName" to "Breakfast Burrito",
+        "mealIngredients" to listOf("Eggs", "Tortilla", "Cheese", "Sausage", "Tomatoes", "Onions"),
+        "calories" to 450
+    )
+
+    addMeal("mealID1", breakfastBurrito)
+}
 
 
-data class trackerModel( //giving id's to the items in the database
-    var id: Int = getID(),
+
+/*
+data class TrackerModel(
+    var mealid: Int = getID(),
     var mealName: String = "",
     var ingredients: String = "",
     var calories: Int,
     var carbonfootprint: Int
-){
-    companion object{
-        fun getID(): Int{
+) {
+    companion object {
+        fun getID(): Int {
             val random = Random()
             return random.nextInt(100)
         }
     }
 }
-class MealDatabase(context: Context) :
-    SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
-    companion object { //creating values for the columns in the database with all necessary information
-        private const val databaseName = "MealTracker.db"
-        private const val databaseVersion = 1
-        private const val MEALTABLE = "Meal_Table"
-        private const val ID = "id"
-        private const val MEALNAME = "Name"
-        private const val INGREDIENTS = "Ingredients"
-        private const val CALORIES = "Calories"
-        private const val CARBONFOOTPRINT = "CarbonFootPrint"
 
+class MealDatabase(context: Context) : SQLiteOpenHelper(context, DATABASENAME, null, DATABASEVERSION) {
+    companion object {
+        private const val DATABASENAME = "mealtracker.db"
+        private const val DATABASEVERSION = 1
+        private const val MEALTABLE = "mealtable"
+        private const val MEALID = "id"
+        private const val MEALNAME = "name"
+        private const val INGREDIENTS = "ingredients"
+        private const val CALORIES = "calories"
+        private const val CARBONFOOTPRINT = "carbonfootprint"
     }
 
-    override fun onCreate(db: SQLiteDatabase) { //creation of the database
-        //Creating database table
-        val createTblmeal = ("Create Table" + MEALTABLE
-                + "(" + ID + "Primary Key"
-                + MEALNAME + "Text,"
-                + INGREDIENTS + "Text,"
-                + CALORIES + "Text,"
-                + CARBONFOOTPRINT + "Text," + ")")
-        db?.execSQL(createTblmeal)
+    override fun onCreate(db: SQLiteDatabase) {
+        val createTblmeal = ("CREATE TABLE $MEALTABLE ("
+                + "$MEALID INTEGER PRIMARY KEY,"
+                + "$MEALNAME TEXT,"
+                + "$INGREDIENTS TEXT,"
+                + "$CALORIES TEXT,"
+                + "$CARBONFOOTPRINT TEXT)")
+        db.execSQL(createTblmeal)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int){ //upgrading the datatbase version when new items are put in
-        db!!.execSQL("DROP TABLE ${MealDatabase}")
-        onCreate(db)
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db?.execSQL("DROP TABLE IF EXISTS $MEALTABLE")
+        if (db != null) {
+            onCreate(db)
+        }
     }
 
-    fun insertMeal(std: trackerModel): Long { //used to insert the meas into the database
+    fun insertMeal(std: TrackerModel): Long {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(ID, std.id)
+        contentValues.put(MEALID, std.mealid)
         contentValues.put(MEALNAME, std.mealName)
         contentValues.put(INGREDIENTS, std.ingredients)
         contentValues.put(CALORIES, std.calories)
@@ -68,8 +90,8 @@ class MealDatabase(context: Context) :
         return success
     }
 
-    fun getMeal() : ArrayList<trackerModel> {
-        val stdList: ArrayList<trackerModel> = ArrayList()
+    fun getAllMeals(): ArrayList<TrackerModel> {
+        val stdList: ArrayList<TrackerModel> = ArrayList()
         val selectQuery = "SELECT * FROM $MEALTABLE"
         val db = this.readableDatabase
 
@@ -77,22 +99,26 @@ class MealDatabase(context: Context) :
 
         try {
             cursor = db.rawQuery(selectQuery, null)
-
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             db.execSQL(selectQuery)
             return ArrayList()
         }
-        var id : Int
-        var name : String
+        var id: Int
+        var name: String
+        var calories: Int
+        var ingredients: String
+        var carbonfootprint: Int
 
-
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
-                id = cursor.getInt(cursor.getColumnIndex(ID))
-                name = cursor.getString(cursor.getColumnIndex(MEALNAME))
+                id = cursor.getInt(cursor.run { getColumnIndex(MEALID) })
+                name = cursor.getString(cursor.run { getColumnIndex(MEALNAME) })
+                ingredients = cursor.getString(cursor.run { getColumnIndex(INGREDIENTS) })
+                calories = cursor.getInt(cursor.run { getColumnIndex(CALORIES) })
+                carbonfootprint = cursor.getInt(cursor.run { getColumnIndex(CARBONFOOTPRINT) })
 
-                val std = trackerModel(id = id, mealName = name)
+                val std = TrackerModel(mealid = id, mealName = name, calories = calories, ingredients = ingredients, carbonfootprint = carbonfootprint)
                 stdList.add(std)
 
             } while (cursor.moveToNext())
@@ -101,63 +127,5 @@ class MealDatabase(context: Context) :
 
         return stdList
     }
-
 }
-/*
-data class Meal(val id: Int, val name: String, val calories: Int, val ingredients: List<String>)
-
-sealed class MealResult<out T> {
-    data class MealAdded(val meal: Meal) : MealResult<Meal>()
-    data class MealError(val message: String) : MealResult<Nothing>()
-}
-
-data class MealAdded(val meal: Meal) : MealResult<Meal>()
-data class MealUpdated(val meal: Meal) : MealResult<Meal>()
-data class MealError(val message: String) : MealResult<Nothing>()
-
-fun addMeal(name: String, calories: Int, ingredients: List<String>, mealDatabase: MealDatabase): MealResult<Meal> {
-    return try {
-        if (name.isBlank() || ingredients.isEmpty()) {
-            return MealResult.MealError("Meal name or ingredients cannot be blank")
-        }
-
-        val newMeal = Meal(1, name, calories, ingredients)
-        val mealId = mealDatabase.insertMeal(trackerModel(mealName = name, ingredients = ingredients.joinToString(", "), calories = calories, carbonfootprint = 0))
-
-        if (mealId != -1L) {
-            MealResult.MealAdded(newMeal.copy(id = mealId.toInt()))
-        } else {
-            MealResult.MealError("Error adding meal to the database")
-        }
-    } catch (e: Exception) {
-        MealResult.MealError("Error adding meal: ${e.message}")
-    }
-}
-private fun Nothing?.isEmpty(): Boolean {
-    return null == true
-}
-
-fun updateMeal(meal: Meal, newName: String, newCalories: Int, mealDatabase: MealDatabase): MealResult<Meal> {
-    return try {
-        val updatedMealModel = trackerModel(id = meal.id, mealName = newName, ingredients = meal.ingredients.joinToString(", "), calories = newCalories, carbonfootprint = 0)
-        val rowsAffected = mealDatabase.updateMeal(updatedMealModel)
-
-        if (rowsAffected > 0) {
-            val updatedMeal = Meal(updatedMealModel.id, updatedMealModel.mealName, updatedMealModel.calories, updatedMealModel.ingredients.split(", "))
-            MealResult.MealUpdated(updatedMeal)
-        } else {
-            MealResult.MealError("Error updating meal in the database")
-        }
-    } catch (exception: Exception) {
-        MealResult.MealError("Error updating meal: ${exception.message}")
-    }
-}
-
-fun searchMeals(query: String, mealDatabase: MealDatabase): List<Meal> {
-    val lowercaseQuery = query.toLowerCase()
-    val mealsFromDatabase = mealDatabase.getAllMeals()
-
-    return mealsFromDatabase.filter { it.mealName.toLowerCase().contains(lowercaseQuery) }
-        .map { Meal(it.id, it.mealName, it.calories, it.ingredients.split(", ")) }
-} */
-
+*/
