@@ -33,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mealtracker.ui.theme.MealTrackerTheme
@@ -43,7 +45,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 data class Meal(
@@ -53,28 +54,34 @@ data class Meal(
     val ingredients: String
 )
 
-@Composable
-fun mainPage(navController: NavController) {
-    var mealName by remember { mutableStateOf("") }
-    var calories by remember { mutableStateOf("") }
-    var carbonfootprint by remember { mutableStateOf("") }
-    var ingredients by remember { mutableStateOf("") }
+class MainViewModel : ViewModel() {
+    private val _mealName = mutableStateOf("")
+    val mealName: String by _mealName
 
-    val database = FirebaseDatabase.getInstance()
-    val mealsRef = database.getReference("meals")
+    private val _calories = mutableStateOf("")
+    val calories: String by _calories
 
-    // Fetch data from Firebase using Coroutines
-    LaunchedEffect(key1 = true) {
-        GlobalScope.launch(Dispatchers.IO) {
+    private val _carbonfootprint = mutableStateOf("")
+    val carbonfootprint: String by _carbonfootprint
+
+    private val _ingredients = mutableStateOf("")
+    val ingredients: String by _ingredients
+
+    private val database = FirebaseDatabase.getInstance()
+    private val mealsRef = database.getReference("meals")
+
+    // Function to fetch meal data
+    fun fetchMealData() {
+        viewModelScope.launch(Dispatchers.IO) {
             mealsRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val meal = snapshot.getValue(Meal::class.java)
                     if (meal != null) {
                         // Update state variables with fetched data
-                        mealName = meal.mealName
-                        calories = meal.calories.toString()
-                        carbonfootprint = meal.carbonfootprint.toString()
-                        ingredients = meal.ingredients
+                        _mealName.value = meal.mealName
+                        _calories.value = meal.calories.toString()
+                        _carbonfootprint.value = meal.carbonfootprint.toString()
+                        _ingredients.value = meal.ingredients
                     }
                 }
 
@@ -84,6 +91,20 @@ fun mainPage(navController: NavController) {
             })
         }
     }
+}
+
+@Composable
+fun mainPage(navController: NavController, viewModel: MainViewModel) {
+    var mealName by remember { mutableStateOf("") }
+    var calories by remember { mutableStateOf("") }
+    var carbonfootprint by remember { mutableStateOf("") }
+    var ingredients by remember { mutableStateOf("") }
+
+    // Fetch data from Firebase using Coroutines
+    LaunchedEffect(key1 = true) {
+        viewModel.fetchMealData()
+    }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -242,9 +263,10 @@ fun mainPage(navController: NavController) {
 fun mainPrev(){
     MealTrackerTheme {
         val navController = rememberNavController()
-        mainPage(navController = navController)
+        mainPage(navController = navController, viewModel = MainViewModel())
     }
 }
+
 
 
 

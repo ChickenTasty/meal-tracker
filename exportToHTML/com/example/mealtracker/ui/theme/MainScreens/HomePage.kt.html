@@ -1,0 +1,275 @@
+<html>
+<head>
+<title>HomePage.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+HomePage.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mealtracker.ui.theme.MainScreens</span>
+
+<span class="s1">import androidx.compose.foundation.background</span>
+<span class="s1">import androidx.compose.foundation.border</span>
+<span class="s1">import androidx.compose.foundation.layout.Arrangement</span>
+<span class="s1">import androidx.compose.foundation.layout.Box</span>
+<span class="s1">import androidx.compose.foundation.layout.Column</span>
+<span class="s1">import androidx.compose.foundation.layout.Row</span>
+<span class="s1">import androidx.compose.foundation.layout.Spacer</span>
+<span class="s1">import androidx.compose.foundation.layout.fillMaxHeight</span>
+<span class="s1">import androidx.compose.foundation.layout.fillMaxSize</span>
+<span class="s1">import androidx.compose.foundation.layout.fillMaxWidth</span>
+<span class="s1">import androidx.compose.foundation.layout.height</span>
+<span class="s1">import androidx.compose.foundation.layout.padding</span>
+<span class="s1">import androidx.compose.foundation.layout.width</span>
+<span class="s1">import androidx.compose.foundation.lazy.LazyColumn</span>
+<span class="s1">import androidx.compose.foundation.shape.RoundedCornerShape</span>
+<span class="s1">import androidx.compose.material3.Button</span>
+<span class="s1">import androidx.compose.material3.Divider</span>
+<span class="s1">import androidx.compose.material3.MaterialTheme</span>
+<span class="s1">import androidx.compose.material3.Surface</span>
+<span class="s1">import androidx.compose.material3.Text</span>
+<span class="s1">import androidx.compose.runtime.Composable</span>
+<span class="s1">import androidx.compose.runtime.LaunchedEffect</span>
+<span class="s1">import androidx.compose.runtime.getValue</span>
+<span class="s1">import androidx.compose.runtime.mutableStateOf</span>
+<span class="s1">import androidx.compose.runtime.remember</span>
+<span class="s1">import androidx.compose.runtime.setValue</span>
+<span class="s1">import androidx.compose.ui.Alignment</span>
+<span class="s1">import androidx.compose.ui.Modifier</span>
+<span class="s1">import androidx.compose.ui.graphics.Color</span>
+<span class="s1">import androidx.compose.ui.text.font.FontWeight</span>
+<span class="s1">import androidx.compose.ui.tooling.preview.Preview</span>
+<span class="s1">import androidx.compose.ui.unit.dp</span>
+<span class="s1">import androidx.compose.ui.unit.sp</span>
+<span class="s1">import androidx.navigation.NavController</span>
+<span class="s1">import androidx.navigation.compose.rememberNavController</span>
+<span class="s1">import com.example.mealtracker.ui.theme.MealTrackerTheme</span>
+<span class="s1">import com.example.mealtracker.ui.theme.functions.Meal</span>
+<span class="s1">import com.example.mealtracker.ui.theme.functions.screen</span>
+<span class="s1">import com.google.firebase.database.DataSnapshot</span>
+<span class="s1">import com.google.firebase.database.DatabaseError</span>
+<span class="s1">import com.google.firebase.database.FirebaseDatabase</span>
+<span class="s1">import com.google.firebase.database.ValueEventListener</span>
+<span class="s1">import kotlinx.coroutines.Dispatchers</span>
+<span class="s1">import kotlinx.coroutines.GlobalScope</span>
+<span class="s1">import kotlinx.coroutines.launch</span>
+
+<span class="s1">data </span><span class="s0">class </span><span class="s1">Meal(</span>
+    <span class="s0">val </span><span class="s1">mealName: String</span><span class="s0">,</span>
+    <span class="s0">val </span><span class="s1">calories: String</span><span class="s0">,</span>
+    <span class="s0">val </span><span class="s1">carbonfootprint: String</span><span class="s0">,</span>
+    <span class="s0">val </span><span class="s1">ingredients: String</span>
+<span class="s1">)</span>
+
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">mainPage(navController: NavController) {</span>
+    <span class="s0">var </span><span class="s1">mealName by remember { mutableStateOf(</span><span class="s2">&quot;&quot;</span><span class="s1">) }</span>
+    <span class="s0">var </span><span class="s1">calories by remember { mutableStateOf(</span><span class="s2">&quot;&quot;</span><span class="s1">) }</span>
+    <span class="s0">var </span><span class="s1">carbonfootprint by remember { mutableStateOf(</span><span class="s2">&quot;&quot;</span><span class="s1">) }</span>
+    <span class="s0">var </span><span class="s1">ingredients by remember { mutableStateOf(</span><span class="s2">&quot;&quot;</span><span class="s1">) }</span>
+
+    <span class="s0">val </span><span class="s1">database = FirebaseDatabase.getInstance()</span>
+    <span class="s0">val </span><span class="s1">mealsRef = database.getReference(</span><span class="s2">&quot;meals&quot;</span><span class="s1">)</span>
+
+    <span class="s3">// Fetch data from Firebase using Coroutines</span>
+    <span class="s1">LaunchedEffect(key1 = </span><span class="s0">true</span><span class="s1">) {</span>
+        <span class="s1">GlobalScope.launch(Dispatchers.IO) {</span>
+            <span class="s1">mealsRef.addValueEventListener(</span><span class="s0">object </span><span class="s1">: ValueEventListener {</span>
+                <span class="s1">override </span><span class="s0">fun </span><span class="s1">onDataChange(snapshot: DataSnapshot) {</span>
+                    <span class="s0">val </span><span class="s1">meal = snapshot.getValue(Meal::</span><span class="s0">class</span><span class="s1">.java)</span>
+                    <span class="s0">if </span><span class="s1">(meal != </span><span class="s0">null</span><span class="s1">) {</span>
+                        <span class="s3">// Update state variables with fetched data</span>
+                        <span class="s1">mealName = meal.mealName</span>
+                        <span class="s1">calories = meal.calories.toString()</span>
+                        <span class="s1">carbonfootprint = meal.carbonfootprint.toString()</span>
+                        <span class="s1">ingredients = meal.ingredients</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+
+                <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCancelled(error: DatabaseError) {</span>
+                    <span class="s3">// Handle error</span>
+                <span class="s1">}</span>
+            <span class="s1">})</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">Surface(</span>
+        <span class="s1">modifier = Modifier.fillMaxSize()</span><span class="s0">,</span>
+        <span class="s1">color = Color.Gray</span>
+    <span class="s1">) {}</span>
+    <span class="s1">Box(</span>
+        <span class="s1">modifier = Modifier.fillMaxSize()</span><span class="s0">,</span>
+        <span class="s1">contentAlignment = Alignment.TopCenter</span>
+    <span class="s1">) {</span>
+        <span class="s1">Column(</span>
+            <span class="s1">modifier = Modifier.padding(</span><span class="s4">16</span><span class="s1">.dp)</span><span class="s0">,</span>
+            <span class="s1">horizontalAlignment = Alignment.CenterHorizontally</span>
+        <span class="s1">) {</span>
+            <span class="s1">Row(</span>
+                <span class="s1">horizontalArrangement = Arrangement.spacedBy(</span><span class="s4">8</span><span class="s1">.dp)</span><span class="s0">,</span>
+                <span class="s1">verticalAlignment = Alignment.CenterVertically</span>
+            <span class="s1">) {</span>
+                <span class="s3">//make each text a button to move pages</span>
+                <span class="s1">Button(</span>
+                    <span class="s1">onClick = {</span>
+                        <span class="s3">/*go to progress page*/</span>
+                        <span class="s1">navController.navigate(route = screen.ProgressPage.route)</span>
+                    <span class="s1">}</span><span class="s0">,</span>
+                    <span class="s1">modifier = Modifier.padding(</span><span class="s4">1</span><span class="s1">.dp)</span>
+                <span class="s1">) {</span>
+                    <span class="s1">Text(</span>
+                        <span class="s1">text = </span><span class="s2">&quot;Progress&quot;</span><span class="s0">,</span>
+                        <span class="s1">fontWeight = FontWeight.Bold</span><span class="s0">,</span>
+                        <span class="s1">fontSize = </span><span class="s4">18</span><span class="s1">.sp</span><span class="s0">,</span>
+                        <span class="s1">modifier = Modifier.padding(</span><span class="s4">1</span><span class="s1">.dp)</span><span class="s0">,</span>
+                        <span class="s1">color = Color.White</span>
+                    <span class="s1">)</span>
+                <span class="s1">}</span>
+                <span class="s1">Button(</span>
+                    <span class="s1">onClick = {</span>
+                        <span class="s3">/*Already at home page do not do anything*/</span>
+                    <span class="s1">}</span><span class="s0">,</span>
+                    <span class="s1">modifier = Modifier.padding(</span><span class="s4">1</span><span class="s1">.dp)</span>
+                <span class="s1">) {</span>
+                    <span class="s1">Text(</span>
+                        <span class="s1">text = </span><span class="s2">&quot;Home&quot;</span><span class="s0">,</span>
+                        <span class="s1">fontWeight = FontWeight.Bold</span><span class="s0">,</span>
+                        <span class="s1">fontSize = </span><span class="s4">18</span><span class="s1">.sp</span><span class="s0">,</span>
+                        <span class="s1">modifier = Modifier.padding(</span><span class="s4">1</span><span class="s1">.dp)</span><span class="s0">,</span>
+                        <span class="s1">color = Color.Red</span>
+                    <span class="s1">)</span>
+                <span class="s1">}</span>
+                <span class="s1">Button(</span>
+                    <span class="s1">onClick = {</span>
+                        <span class="s3">/*Navigate to ArchivePage*/</span>
+                        <span class="s1">navController.navigate(route = screen.ArchivePage.route)</span>
+                    <span class="s1">}</span><span class="s0">,</span>
+                    <span class="s1">modifier = Modifier.padding(</span><span class="s4">1</span><span class="s1">.dp)</span>
+                <span class="s1">) {</span>
+                    <span class="s1">Text(</span>
+                        <span class="s1">text = </span><span class="s2">&quot;Archive&quot;</span><span class="s0">,</span>
+                        <span class="s1">fontWeight = FontWeight.Bold</span><span class="s0">,</span>
+                        <span class="s1">fontSize = </span><span class="s4">18</span><span class="s1">.sp</span><span class="s0">,</span>
+                        <span class="s1">modifier = Modifier.padding(</span><span class="s4">1</span><span class="s1">.dp)</span><span class="s0">,</span>
+                        <span class="s1">color = Color.White</span>
+                    <span class="s1">)</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s1">Divider(</span>
+                <span class="s1">modifier = Modifier</span>
+                    <span class="s1">.fillMaxWidth()</span>
+                    <span class="s1">.padding(vertical = </span><span class="s4">8</span><span class="s1">.dp)</span><span class="s0">,</span>
+                <span class="s1">color = Color.White</span>
+            <span class="s1">)</span>
+            <span class="s1">Box(</span>
+                <span class="s1">modifier = Modifier</span>
+                    <span class="s1">.border(</span>
+                        <span class="s4">1</span><span class="s1">.dp</span><span class="s0">,</span>
+                        <span class="s1">Color.Black</span><span class="s0">,</span>
+                        <span class="s1">shape = MaterialTheme.shapes.extraLarge</span>
+                    <span class="s1">)</span>
+                    <span class="s1">.padding(</span><span class="s4">5</span><span class="s1">.dp)</span>
+            <span class="s1">) {</span>
+                <span class="s1">Box(</span>
+                    <span class="s1">modifier = Modifier.width(</span><span class="s4">80</span><span class="s1">.dp)</span><span class="s0">,</span>
+                    <span class="s1">contentAlignment = Alignment.Center</span>
+                <span class="s1">) {</span>
+                    <span class="s1">Button(</span>
+                        <span class="s1">onClick = {</span>
+                            <span class="s3">/*addmeal function here*/</span>
+                            <span class="s1">navController.navigate(route = screen.addMealPage.route)</span>
+                        <span class="s1">}</span><span class="s0">,</span>
+                        <span class="s1">modifier = Modifier.width(</span><span class="s4">80</span><span class="s1">.dp)</span>
+                    <span class="s1">) {}</span>
+                    <span class="s1">Text(</span>
+                        <span class="s1">text = </span><span class="s2">&quot;Add Meal&quot;</span><span class="s0">,</span>
+                        <span class="s1">fontWeight = FontWeight.Bold</span><span class="s0">,</span>
+                        <span class="s1">fontSize = </span><span class="s4">18</span><span class="s1">.sp</span><span class="s0">,</span>
+                        <span class="s1">modifier = Modifier.padding(bottom = </span><span class="s4">5</span><span class="s1">.dp)</span><span class="s0">,</span>
+                        <span class="s1">color = Color.White</span>
+                    <span class="s1">)</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s1">Spacer(modifier = Modifier.height(</span><span class="s4">2</span><span class="s1">.dp))</span>
+
+        <span class="s1">Box(</span>
+            <span class="s1">modifier = Modifier</span>
+                <span class="s1">.fillMaxWidth()</span>
+                <span class="s1">.height(</span><span class="s4">600</span><span class="s1">.dp)</span>
+                <span class="s1">.background(Color.DarkGray</span><span class="s0">, </span><span class="s1">shape = RoundedCornerShape(</span><span class="s4">9</span><span class="s1">.dp))</span>
+                <span class="s1">.align(Alignment.BottomCenter)</span>
+        <span class="s1">) {</span>
+            <span class="s1">Text(</span>
+                <span class="s1">text = </span><span class="s2">&quot;Meals Today&quot;</span><span class="s0">,</span>
+                <span class="s1">fontWeight = FontWeight.Bold</span><span class="s0">,</span>
+                <span class="s1">fontSize = </span><span class="s4">25</span><span class="s1">.sp</span><span class="s0">,</span>
+                <span class="s1">modifier = Modifier.padding(bottom = </span><span class="s4">5</span><span class="s1">.dp)</span><span class="s0">,</span>
+                <span class="s1">color = Color.White</span>
+            <span class="s1">)</span>
+            <span class="s1">LazyColumn(</span>
+                <span class="s1">modifier = Modifier</span>
+                    <span class="s1">.fillMaxWidth()</span>
+                    <span class="s1">.fillMaxHeight()</span>
+                    <span class="s1">.padding(</span><span class="s4">8</span><span class="s1">.dp)</span>
+            <span class="s1">) {</span>
+                <span class="s3">// Display the meal information in LazyColumn</span>
+                    <span class="s1">item {</span>
+                        <span class="s1">Text(</span>
+                            <span class="s1">text = </span><span class="s2">&quot;Meal Name: </span><span class="s0">$</span><span class="s1">mealName</span><span class="s2">&quot;</span><span class="s0">,</span>
+                            <span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s0">,</span>
+                            <span class="s1">color = Color.White</span>
+                        <span class="s1">)</span>
+                        <span class="s1">Text(</span>
+                            <span class="s1">text = </span><span class="s2">&quot;Calories: </span><span class="s0">$</span><span class="s1">calories</span><span class="s2">&quot;</span><span class="s0">,</span>
+                            <span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s0">,</span>
+                            <span class="s1">color = Color.White</span>
+                        <span class="s1">)</span>
+                        <span class="s1">Text(</span>
+                            <span class="s1">text = </span><span class="s2">&quot;Ingredients: </span><span class="s0">$</span><span class="s1">ingredients</span><span class="s2">&quot;</span><span class="s0">,</span>
+                            <span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s0">,</span>
+                            <span class="s1">color = Color.White</span>
+                        <span class="s1">)</span>
+                        <span class="s1">Text(</span>
+                            <span class="s1">text = </span><span class="s2">&quot;Carbon foot print: </span><span class="s0">$</span><span class="s1">carbonfootprint</span><span class="s2">&quot;</span><span class="s0">,</span>
+                            <span class="s1">fontSize = </span><span class="s4">16</span><span class="s1">.sp</span><span class="s0">,</span>
+                            <span class="s1">color = Color.White</span>
+                        <span class="s1">)</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+
+
+
+<span class="s1">@Preview(showBackground = </span><span class="s0">true</span><span class="s1">)</span>
+<span class="s1">@Composable</span>
+<span class="s0">fun </span><span class="s1">mainPrev(){</span>
+    <span class="s1">MealTrackerTheme {</span>
+        <span class="s0">val </span><span class="s1">navController = rememberNavController()</span>
+        <span class="s1">mainPage(navController = navController)</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.mealtracker.ui.theme.MainScreens.MainViewModel
 import com.example.mealtracker.ui.theme.MainScreens.archivePage
 import com.example.mealtracker.ui.theme.MainScreens.mainPage
 import com.example.mealtracker.ui.theme.MainScreens.mainPage2
@@ -17,7 +18,7 @@ fun NavGraph(navController: NavHostController){
         startDestination = screen.HomePage.route
     ){
         composable( route = screen.HomePage.route){
-            mainPage(navController = navController)
+            mainPage(navController = navController, viewModel = MainViewModel())
         }
         composable( route = screen.HomePage2.route){
             mainPage2(navController = navController)
