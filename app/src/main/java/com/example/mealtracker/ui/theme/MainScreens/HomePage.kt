@@ -100,6 +100,7 @@ fun mainPage(navController: NavController, viewModel: MainViewModel) {
     var carbonfootprint by remember { mutableStateOf("") }
     var ingredients by remember { mutableStateOf("") }
 
+
     // Fetch data from Firebase using Coroutines
     LaunchedEffect(key1 = true) {
         viewModel.fetchMealData()
