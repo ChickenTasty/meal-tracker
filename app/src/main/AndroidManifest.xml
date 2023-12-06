@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:name=".MyApp"
         android:theme="@style/Theme.MealTracker"
+
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"

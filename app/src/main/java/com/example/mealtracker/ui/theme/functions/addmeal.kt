@@ -88,7 +88,7 @@ fun openAddMeal(navController: NavController) {
 
                     val ingredientsList = ingredients.split(",").map { it.trim() }
                     val caloriesInt = calories.toIntOrNull() ?: 0
-                    addMeal(mealName, caloriesInt, ingredientsList)
+                    addMeal(mealName, caloriesInt, carbonfootprint, ingredientsList)
 
                     // Assuming mealName, ingredients, calories, and carbonfootprint are mutable variables
                     mealName = ""
@@ -106,7 +106,7 @@ fun openAddMeal(navController: NavController) {
     }
 }
 
-fun addMeal(mealName: String, calories: Int, ingredients: List<String>) {
+fun addMeal(mealName: String, calories: Int, carbonfootprint: String, ingredients: List<String>) {
     try {
         // Initializing firebase
         val mealDatabase = FirebaseDatabase.getInstance()
@@ -119,7 +119,8 @@ fun addMeal(mealName: String, calories: Int, ingredients: List<String>) {
         val mealData = mapOf(
             "mealName" to mealName,
             "calories" to calories,
-            "ingredients" to ingredients
+            "ingredients" to ingredients,
+            "carbon foot print" to carbonfootprint
         )
 
         // Adding meal to the database

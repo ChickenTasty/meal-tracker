@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id ("kotlin-android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -52,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.firebase:firebase-database:20.3.0")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -80,7 +82,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("com.google.firebase:firebase-database-ktx:20.2.2")
+
     implementation("org.mindrot:jbcrypt:0.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -95,6 +97,6 @@ dependencies {
     implementation ("androidx.compose.ui:ui:1.1.1")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.1.1")
     implementation ("androidx.compose.material:material:1.1.1")
-    implementation ("com.google.firebase:firebase-database:10.2.2")
+    implementation ("com.google.firebase:firebase-database:20.2.2")
 
 }
