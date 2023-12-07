@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -46,10 +47,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+
 data class Meal(
     val mealName: String,
     val calories: String,
-    val carbonfootprint: String,
+    val carbonfootprint: Int,
     val ingredients: String
 )
 
@@ -62,20 +64,20 @@ fun mainPage(navController: NavController) {
 
     val database = FirebaseDatabase.getInstance()
     val mealsRef = database.getReference("meals")
+    var mealList by remember { mutableStateOf<List<Meal>>(emptyList()) }
 
     // Fetch data from Firebase using Coroutines
     LaunchedEffect(key1 = true) {
         GlobalScope.launch(Dispatchers.IO) {
             mealsRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val meal = snapshot.getValue(Meal::class.java)
-                    if (meal != null) {
-                        // Update state variables with fetched data
-                        mealName = meal.mealName
-                        calories = meal.calories.toString()
-                        carbonfootprint = meal.carbonfootprint.toString()
-                        ingredients = meal.ingredients
+                    val updatedmealList = mutableListOf<Meal>()
+                    for (childSnapshot in snapshot.children) {
+                        val meal = childSnapshot.getValue(Meal::class.java)
+                        meal?.let { updatedmealList.add(it) }
                     }
+
+                    mealList = updatedmealList
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -119,7 +121,7 @@ fun mainPage(navController: NavController) {
                 }
                 Button(
                     onClick = {
-                        /*Already at home page do not do anything*/
+                              navController.navigate(route = screen.HomePage2.route)
                     },
                     modifier = Modifier.padding(1.dp)
                 ) {
@@ -206,27 +208,30 @@ fun mainPage(navController: NavController) {
                     .padding(8.dp)
             ) {
                 // Display the meal information in LazyColumn
-                item {
-                    Text(
-                        text = "Meal Name: $mealName",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Calories: $calories",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Ingredients: $ingredients",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Carbon foot print: $carbonfootprint",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
+                items(mealList) {meal ->
+                    Column {
+                        Text(
+                            text = "Meal Name: ${meal.mealName}",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Calories: ${meal.calories}",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Ingredients: ${meal.ingredients}",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Carbon foot print: ${meal.carbonfootprint}",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }

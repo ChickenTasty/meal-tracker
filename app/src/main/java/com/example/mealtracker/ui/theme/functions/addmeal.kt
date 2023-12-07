@@ -16,7 +16,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.database.FirebaseDatabase
 import java.util.UUID
-
+data class Meal(
+    val mealName: String,
+    val calories: Int,
+    val carbonfootprint: String,
+    val ingredients: List<String>
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun openAddMeal(navController: NavController) {
@@ -116,12 +121,7 @@ fun addMeal(mealName: String, calories: Int, carbonfootprint: String, ingredient
         val mealID = UUID.randomUUID().toString()
 
 
-        val mealData = mapOf(
-            "mealName" to mealName,
-            "calories" to calories,
-            "ingredients" to ingredients,
-            "carbon foot print" to carbonfootprint
-        )
+        val mealData = Meal(mealName, calories, carbonfootprint, ingredients)
 
         // Adding meal to the database
         mealsRef.child(mealID).setValue(mealData)
@@ -130,9 +130,3 @@ fun addMeal(mealName: String, calories: Int, carbonfootprint: String, ingredient
     }
 }
 
-data class Meal(
-    val mealName: String,
-    val calories: Int,
-    val carbonfootprint: Int,
-    val ingredients: String
-)
